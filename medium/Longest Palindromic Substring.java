@@ -1,28 +1,24 @@
-public class Solution {
+class Solution {
     public String longestPalindrome(String s) {
-        if (s.length() <= 1) {
-            return s;
+        String ans = "";
+        for(int i = 0; i < s.length(); i++) {
+            String odd = getPalindromeWithMidPoints(i, i, s);
+            String even = getPalindromeWithMidPoints(i,i+1, s);
+            String currMax = odd.length() > even.length() ? odd : even;
+            ans = currMax.length() > ans.length() ? currMax : ans;
         }
+        return ans;
+    }
 
-        int maxLen = 1;
-        int start = 0;
-        int end = 0;
-        boolean[][] dp = new boolean[s.length()][s.length()];
-
-        for (int i = 0; i < s.length(); ++i) {
-            dp[i][i] = true;
-            for (int j = 0; j < i; ++j) {
-                if (s.charAt(j) == s.charAt(i) && (i - j <= 2 || dp[j + 1][i - 1])) {
-                    dp[j][i] = true;
-                    if (i - j + 1 > maxLen) {
-                        maxLen = i - j + 1;
-                        start = j;
-                        end = i;
-                    }
-                }
+    private String getPalindromeWithMidPoints(int start, int end, String s) {
+        while(start >= 0 && end < s.length()) {
+            if(s.charAt(start) == s.charAt(end)) {
+                start--;
+                end++;
+            } else {
+                break;
             }
         }
-
-        return s.substring(start, end + 1);
+        return s.substring(start + 1 , end);
     }
 }
