@@ -1,37 +1,42 @@
 class Solution {
+    private boolean isCyclic;
+    private ArrayList<Integer> graph[];
+    private int ans[], visited[], index;
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        int degree[] = new int[numCourses];
-        List<Integer> map[] = new ArrayList[numCourses];
+        index = numCourses-1;
+        ans = new int[numCourses];
+        visited = new int[numCourses];
+        graph = new ArrayList[numCourses];
+
         for(int pre[] : prerequisites) {
-            if(map[pre[1]] == null) {
-                map[pre[1]] = new ArrayList<>();
+            if(graph[pre[1]] == null) {
+                graph[pre[1]] = new ArrayList<>();
             }
-            degree[pre[0]]++;
-            map[pre[1]].add(pre[0]);
+            graph[pre[1]].add(pre[0]);
         }
 
-        Queue<Integer> q = new LinkedList<>();
-        for(int i = 0; i < numCourses; i++) {
-            if(degree[i] == 0) {
-                q.offer(i);
-            }
-        }
-        
-        int ans[] = new int[numCourses], index = 0;
-        while(!q.isEmpty()) {
-            int a = q.poll();
-            ans[index++] = a;
-            if(map[a] != null)
-            for(int b : map[a]) {
-                if(--degree[b] == 0) {
-                    q.offer(b);
-                }
-            }
+        for(int i = 0; i < numCourses && !this.isCyclic; i++) {
+            dfs(i);
         }
 
-        if(index == numCourses) {
-            return ans;
-        }
-        return new int[]{};
+        return  this.isCyclic ? new int[]{} : ans;
     }
+
+    private void dfs(int curr) {
+        // System.out.println(curr + " " + graph[curr]);
+        if(visited[curr] == 2 || this.isCyclic) {
+            return ;
+        } else if(visited[curr] == 1) {
+            this.isCyclic = true;
+            return ;
+        }
+        visited[curr] = 1;
+        if(graph[curr] != null)
+        for(int neighbor : graph[curr]) {
+            dfs(neighbor);
+        }
+        ans[index--] = curr;
+        visited[curr] = 2;
+    }
+
 }
